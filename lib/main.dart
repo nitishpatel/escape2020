@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:syoogle/Pages/seventhpage.dart';
 import 'package:syoogle/Start.dart';
 
 void main() {

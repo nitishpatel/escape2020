@@ -1,6 +1,9 @@
+import 'dart:html';
 import 'package:flutter/material.dart';
 import 'package:google_fonts/google_fonts.dart';
-import 'package:syoogle/homepage.dart';
+import 'package:shared_preferences/shared_preferences.dart';
+import 'package:syoogle/Pages/firstpage.dart';
+import 'package:syoogle/logs.dart';
 
 class Start extends StatefulWidget {
   @override
@@ -8,6 +11,8 @@ class Start extends StatefulWidget {
 }
 
 class _StartState extends State<Start> {
+  final _formKey = GlobalKey<FormState>();
+  String name, code;
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -24,7 +29,7 @@ class _StartState extends State<Start> {
           ),
           child: Column(
             mainAxisAlignment: MainAxisAlignment.spaceAround,
-            children: [
+            children: <Widget>[
               Center(
                 child: Text(
                   'Syoogle @ SynTech-X \'20 - \'21',
@@ -46,29 +51,60 @@ class _StartState extends State<Start> {
               Center(
                 child: Container(
                   width: MediaQuery.of(context).size.width * 0.5,
-                  child: Card(
-                    child: Column(
-                      children: [
-                        Padding(
-                          padding: const EdgeInsets.all(8.0),
-                          child: TextField(
-                            decoration: InputDecoration(
-                              labelText: "Your Name Here",
+                  child: Form(
+                    key: _formKey,
+                    child: Card(
+                      child: Column(
+                        children: [
+                          Padding(
+                            padding: const EdgeInsets.all(8.0),
+                            child: TextFormField(
+                              validator: (val) =>
+                                  val.isEmpty ? "No STX No Entry" : null,
+                              onChanged: (val) {
+                                name = val;
+                              },
+                              decoration: InputDecoration(
+                                labelText: "STX No.",
+                              ),
                             ),
                           ),
-                        ),
-                        Padding(
+                          Padding(
+                            padding: const EdgeInsets.all(8.0),
+                            child: TextFormField(
+                              validator: (val) =>
+                                  val.isEmpty ? "No Code No Entry" : null,
+                              onChanged: (val) {
+                                code = val;
+                              },
+                              decoration: InputDecoration(
+                                labelText: "Your Code Here",
+                              ),
+                            ),
+                          ),
+                          Padding(
                             padding: const EdgeInsets.all(8.0),
                             child: ElevatedButton(
                               child: Text("Let's Go"),
-                              onPressed: () {
-                                Navigator.of(context).pushReplacement(
+                              onPressed: () async {
+                                if (_formKey.currentState.validate()) {
+                                  SharedPreferences prefs =
+                                      await SharedPreferences.getInstance();
+                                  prefs.setString("stx", name);
+                                  prefs.setString("code", code);
+                                  createlog("0", "0", "LoggedIn");
+                                  Navigator.of(context).pushReplacement(
                                     MaterialPageRoute(
-                                        builder: (BuildContext context) =>
-                                            Homepage()));
+                                      builder: (BuildContext context) =>
+                                          FirstPage(),
+                                    ),
+                                  );
+                                }
                               },
-                            )),
-                      ],
+                            ),
+                          ),
+                        ],
+                      ),
                     ),
                   ),
                 ),
